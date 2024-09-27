@@ -6,12 +6,6 @@ Sequencia de Slides: <br>
 
 Sequencia de Slides: <br>
 
-1. Capa
-2. Sumário
-3. O que é GLPI
-4. Instalação do GLPI
-5. Considerações Finais
-
 
 
 Apresentação: **apenas Mateus tem acesso!** <br>
