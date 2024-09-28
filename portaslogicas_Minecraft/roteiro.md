@@ -10,8 +10,6 @@ Sequencia de Slides: <br>
 
 Apresentação: **apenas Mateus tem acesso!** <br>
 Slides em PDF: *link* <br>
-Apresentação: **apenas Mateus tem acesso!** <br>
-Slides em PDF: *link* <br>
 
 Link de referência:
 
