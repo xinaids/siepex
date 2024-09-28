@@ -1,12 +1,17 @@
 Sequencia de Slides: <br>
 <ol>
-<li> Capa
-<li>
+<li>Capa
+<li>Apresentação do ministrante
+<li>Introducao Sistemas Digitais
+<li>Introducao Portas Logicas
+<li>Introducao Minecraft
+<li>Introducao Redstone
+<li>Mão na Massa
+<li>Perguntas, Dúvidas, Questionamentos
+<li>Fim Apresentacao
 </ol>
 
-Sequencia de Slides: <br>
-
-
+Slides <br>
 
 Apresentação: **apenas Mateus tem acesso!** <br>
 Slides em PDF: *link* <br>
