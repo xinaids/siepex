@@ -1,6 +1,9 @@
 # server ssh
 sudo apt install openssh-server
 
+# net tools 
+apt install net-tools
+
 # Atualiza Lista de Pacotes
 apt update
 
@@ -32,6 +35,30 @@ cat > /etc/apache2/conf-available/siepex.conf << EOF
     </IfModule>
 </Directory>
 EOF
+
+# o tongao manda esse codigo aaiiiii VVVV
+
+sudo bash -c 'cat > /etc/apache2/conf-available/siepex.conf << EOF
+<Directory "/var/www/siepex/glpi/public/">
+    AllowOverride All
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php [QSA,L]
+    Options -Indexes
+    Options -Includes -ExecCGI
+    Require all granted
+    <IfModule mod_php7.c>
+        php_value max_execution_time 600
+        php_value always_populate_raw_post_data -1
+    </IfModule>
+    <IfModule mod_php8.c>
+        php_value max_execution_time 600
+        php_value always_populate_raw_post_data -1
+    </IfModule>
+</Directory>
+EOF'
+
+### 
 
 # Habilitar o módulo rewrite do apache
 a2enmod rewrite
