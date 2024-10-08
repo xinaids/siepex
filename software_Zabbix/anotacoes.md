@@ -40,3 +40,16 @@ DBPassword=suasenha
 INICIAR OS SERVIÇOS E HABILITAR INICIALIZAÇÃO AUTOMATICA
 systemctl restart zabbix-server zabbix-agent apache2
 systemctl enable zabbix-server zabbix-agent apache2
+
+https://ipdeconfig/zabbix
+
+usuario/senha
+Admin
+zabbix
+
+
+### INSTALANDO UM AGENTE
+
+https://relatosti.com.br/artigo/instalando-o-zabbix-agent-no-linux-ubuntu-debian-e-centos&id=200
+
+
