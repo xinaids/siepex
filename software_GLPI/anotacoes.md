@@ -4,155 +4,218 @@ sudo apt install openssh-server
 # net tools 
 apt install net-tools
 
-# Atualiza Lista de Pacotes
-apt update
+### atualizar tudo e todos no sistema
+apt update && apt upgrade
 
-# PACOTES MANIPULAÇÃO DE ARQUIVOS
-apt install -y xz-utils bzip2 unzip curl git
-
-Preparação do Servidor WEB
-# Instalar dependências no sistema
-apt install -y apache2 libapache2-mod-php php-soap php-cas php php-{apcu,cli,common,curl,gd,imap,ldap,mysql,xmlrpc,xml,mbstring,bcmath,intl,zip,redis,bz2}
-
-Resolvendo Problema de Acesso WEB ao Diretório
-# Criar arquivo com conteúdo
-cat > /etc/apache2/conf-available/siepex.conf << EOF
-<Directory "/var/www/siepex/glpi/public/">
-    AllowOverride All
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.*)$ index.php [QSA,L]
-    Options -Indexes
-    Options -Includes -ExecCGI
-    Require all granted
-    <IfModule mod_php7.c>
-        php_value max_execution_time 600
-        php_value always_populate_raw_post_data -1
-    </IfModule>
-    <IfModule mod_php8.c>
-        php_value max_execution_time 600
-        php_value always_populate_raw_post_data -1
-    </IfModule>
-</Directory>
-EOF
-
-# o tongao manda esse codigo aaiiiii VVVV
-
-sudo bash -c 'cat > /etc/apache2/conf-available/siepex.conf << EOF
-<Directory "/var/www/siepex/glpi/public/">
-    AllowOverride All
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.*)$ index.php [QSA,L]
-    Options -Indexes
-    Options -Includes -ExecCGI
-    Require all granted
-    <IfModule mod_php7.c>
-        php_value max_execution_time 600
-        php_value always_populate_raw_post_data -1
-    </IfModule>
-    <IfModule mod_php8.c>
-        php_value max_execution_time 600
-        php_value always_populate_raw_post_data -1
-    </IfModule>
-</Directory>
-EOF'
-
-### 
-
-# Habilitar o módulo rewrite do apache
-a2enmod rewrite
-
-# Habilita a configuração criada
-a2enconf siepex.conf
-
-# Reinicia o servidor web considerando a nova configuração
-systemctl restart apache2
-
-
-Baixar e Instalar o GLPi
-# Criar diretório onde o GLPi será instalado
-mkdir /var/www/siepex
-
-# Baixar o sistema GLPi
-wget -O- https://github.com/glpi-project/glpi/releases/download/10.0.15/glpi-10.0.15.tgz | tar -zxv -C /var/www/siepex/
-
-# Movendo diretórios "files" e "config" para fora do GLPi 
-mv /var/www/siepex/glpi/files /var/www/siepex/
-mv /var/www/siepex/glpi/config /var/www/siepex/
-
-# Ajustando código do GLPi para o novo local dos diretórios
-sed -i 's/\/config/\/..\/config/g' /var/www/siepex/glpi/inc/based_config.php
-sed -i 's/\/files/\/..\/files/g' /var/www/siepex/glpi/inc/based_config.php
-
-
-Ajustar Permissões de Arquivos
-# Ajustar propriedade de arquivos da aplicação GLPi
-chown root:root /var/www/siepex/glpi -Rf
-
-# Ajustar propriedade de arquivos files, config e marketplace
-chown www-data:www-data /var/www/siepex/files -Rf
-chown www-data:www-data /var/www/siepex/config -Rf
-chown www-data:www-data /var/www/siepex/glpi/marketplace -Rf
-
-# Ajustar permissões gerais
-find /var/www/siepex/ -type d -exec chmod 755 {} \;
-find /var/www/siepex/ -type f -exec chmod 644 {} \;
-
-# Criando link simbólico para o sistema GLPi dentro do diretório defalt do apache
-ln -s /var/www/siepex/glpi /var/www/html/glpi
-
-Preparando o Serviço SQL
-# Instalando o Serviço MySQL
+### instalacao de pacotes para glpi
+apt install -y apache2 php php-{apcu,cli,common,curl,gd,imap,ldap,mysql,xmlrpc,xml,mbstring,bcmath,intl,zip,redis,bz2} libapache2-mod-php php-soap php-cas
 apt install -y mariadb-server
 
-# Criando base de dados
-mysql -e "create database siepex_glpi character set utf8"
+### instalcao do sql banco de dados
+mysql_secure_installation
+    unix socket = y
+    change root password = y (siepexifrs123)
+    anonymous = y
+    remote login = y,y,y,y
+    
 
-# Criando usuário
-mysql -e "create user 'bancodedados'@'localhost' identified by '123456'"
 
-# Dando privilégios ao usuário
-mysql -e "grant all privileges on siepex_glpi.* to 'bancodedados'@'localhost' with grant option";
-
-# Habilitando suporte ao timezone no MySQL/Mariadb
+### adicionar timezona (fuso horario)
 mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql
 
-# Permitindo acesso do usuário ao TimeZone
-mysql -e "GRANT SELECT ON mysql.time_zone_name TO 'bancodedados'@'localhost';"
+### criar usuario e database no banco de dados
+mysql -uroot -pmysql
+CREATE DATABASE glpi;
+CREATE USER 'glpi'@'localhost' IDENTIFIED BY 'yourstrongpassword';
+GRANT ALL PRIVILEGES ON glpi.* TO 'glpi'@'localhost';
+GRANT SELECT ON `mysql`.`time_zone_name` TO 'glpi'@'localhost';
+FLUSH PRIVILEGES;
 
-# Forçando aplicação dos privilégios
-mysql -e "FLUSH PRIVILEGES;"
+### instalacao do glpi
+cd /var/www/html
+wget https://github.com/glpi-project/glpi/releases/download/10.0.15/glpi-10.0.15.tgz
+tar -xvzf glpi-10.0.15.tgz
 
-# Ver IP
-ifconfig
+### hierarquia dos dados
+/etc/glpi : for the files of configuration of GLPI (config_db.php, config_db_slave.php) ;
+/var/www/html/glpi : for the source code of GLPI (in reading only), served by Apache;
+/var/lib/glpi : for the variable files of GLPI (session, uploaded documents, cache, cron, plugins, …);
+/var/log/glpi : for the log files of GLPI.
 
-cd /etc/apache2/conf-available/
-nano glpi.conf
+### downstream, indicar onde o diretorio do glpi está instalado # criar pasta
+nano /var/www/html/glpi/inc/downstream.php
+
+### config file colar isso aqui
+<?php
+define('GLPI_CONFIG_DIR', '/etc/glpi/');
+if (file_exists(GLPI_CONFIG_DIR . '/local_define.php')) {
+require_once GLPI_CONFIG_DIR . '/local_define.php';
+}
+
+### mover diretorios
+mv /var/www/html/glpi/config /etc/glpi
+mv /var/www/html/glpi/files /var/lib/glpi
+mv /var/lib/glpi/_log /var/log/glpi
+
+### definir arquivos locais
+nano /etc/glpi/local_define.php
+
+### colar isso
+<?php
+define('GLPI_VAR_DIR', '/var/lib/glpi');
+define('GLPI_DOC_DIR', GLPI_VAR_DIR);
+define('GLPI_CRON_DIR', GLPI_VAR_DIR . '/_cron');
+define('GLPI_DUMP_DIR', GLPI_VAR_DIR . '/_dumps');
+define('GLPI_GRAPH_DIR', GLPI_VAR_DIR . '/_graphs');
+define('GLPI_LOCK_DIR', GLPI_VAR_DIR . '/_lock');
+define('GLPI_PICTURE_DIR', GLPI_VAR_DIR . '/_pictures');
+define('GLPI_PLUGIN_DOC_DIR', GLPI_VAR_DIR . '/_plugins');
+define('GLPI_RSS_DIR', GLPI_VAR_DIR . '/_rss');
+define('GLPI_SESSION_DIR', GLPI_VAR_DIR . '/_sessions');
+define('GLPI_TMP_DIR', GLPI_VAR_DIR . '/_tmp');
+define('GLPI_UPLOAD_DIR', GLPI_VAR_DIR . '/_uploads');
+define('GLPI_CACHE_DIR', GLPI_VAR_DIR . '/_cache');
+define('GLPI_LOG_DIR', '/var/log/glpi');
+
+### dar permissoes nas pastas e arquivos em geral
+
+chown root:root /var/www/html/glpi/ -R
+chown www-data:www-data /etc/glpi -R
+chown www-data:www-data /var/lib/glpi -R
+chown www-data:www-data /var/log/glpi -R
+chown www-data:www-data /var/www/html/glpi/marketplace -Rf
+find /var/www/html/glpi/ -type f -exec chmod 0644 {} \;
+find /var/www/html/glpi/ -type d -exec chmod 0755 {} \;
+find /etc/glpi -type f -exec chmod 0644 {} \;
+find /etc/glpi -type d -exec chmod 0755 {} \;
+find /var/lib/glpi -type f -exec chmod 0644 {} \;
+find /var/lib/glpi -type d -exec chmod 0755 {} \;
+find /var/log/glpi -type f -exec chmod 0644 {} \;
+find /var/log/glpi -type d -exec chmod 0755 {} \;
+
+chown root:root /var/www/html/glpi/ -R
+# Muda o dono e o grupo de todos os arquivos e diretórios dentro de /var/www/html/glpi/ recursivamente (-R) para "root".
+
+chown www-data:www-data /etc/glpi -R
+# Muda o dono e o grupo de todos os arquivos e diretórios dentro de /etc/glpi/ recursivamente (-R) para "www-data".
+
+chown www-data:www-data /var/lib/glpi -R
+# Muda o dono e o grupo de todos os arquivos e diretórios dentro de /var/lib/glpi/ recursivamente (-R) para "www-data".
+
+chown www-data:www-data /var/log/glpi -R
+# Muda o dono e o grupo de todos os arquivos e diretórios dentro de /var/log/glpi/ recursivamente (-R) para "www-data".
+
+chown www-data:www-data /var/www/html/glpi/marketplace -Rf
+# Muda o dono e o grupo de todos os arquivos e diretórios dentro de /var/www/html/glpi/marketplace/ recursivamente (-R) para "www-data". O "-f" faz com que erros sejam suprimidos (silenciosamente).
+
+find /var/www/html/glpi/ -type f -exec chmod 0644 {} \;
+# Encontra todos os arquivos (-type f) dentro de /var/www/html/glpi/ e executa o comando chmod 0644, que define as permissões para leitura e escrita para o proprietário, e leitura para o grupo e outros.
+
+find /var/www/html/glpi/ -type d -exec chmod 0755 {} \;
+# Encontra todos os diretórios (-type d) dentro de /var/www/html/glpi/ e executa o comando chmod 0755, que define permissões de leitura, escrita e execução para o proprietário, e leitura e execução para grupo e outros.
+
+find /etc/glpi -type f -exec chmod 0644 {} \;
+# Encontra todos os arquivos (-type f) dentro de /etc/glpi/ e executa o comando chmod 0644 para ajustar permissões.
+
+find /etc/glpi -type d -exec chmod 0755 {} \;
+# Encontra todos os diretórios (-type d) dentro de /etc/glpi/ e ajusta permissões para 0755.
+
+find /var/lib/glpi -type f -exec chmod 0644 {} \;
+# Encontra todos os arquivos (-type f) dentro de /var/lib/glpi/ e ajusta permissões para 0644.
+
+find /var/lib/glpi -type d -exec chmod 0755 {} \;
+# Encontra todos os diretórios (-type d) dentro de /var/lib/glpi/ e ajusta permissões para 0755.
+
+find /var/log/glpi -type f -exec chmod 0644 {} \;
+# Encontra todos os arquivos (-type f) dentro de /var/log/glpi/ e ajusta permissões para 0644.
+
+find /var/log/glpi -type d -exec chmod 0755 {} \;
+# Encontra todos os diretórios (-type d) dentro de /var/log/glpi/ e ajusta permissões para 0755.
+
+Resumindo o 0644:
+
+Proprietário: Leitura e escrita (rw-).
+Grupo: Somente leitura (r--).
+Outros: Somente leitura (r--).
+
+Resumindo o 0755:
+
+Proprietário: Leitura, escrita e execução (rwx).
+Grupo: Leitura e execução (r-x).
+Outros: Leitura e execução (r-x).
+
+### web server, criar arquivo no seguinte diretorio
+nano /etc/apache2/sites-available/glpi.conf
+
+
+# colar isso
+# Start of the VirtualHost configuration for port 80
 
 <VirtualHost *:80>
     ServerName localhost
-    DocumentRoot /var/www/html/servicedeskbasil/glpi/public
-
-    <Directory /var/www/html/servicedeskbrasil/glpi/public>
-        AllowOverride All
+    # Specify the server's hostname
+    DocumentRoot /var/www/html/glpi/public
+    # The directory where the website's files are located
+    # Start of a Directory directive for the website's directory
+    <Directory /var/www/html/glpi/public>
+        Require all granted
+        # Allow all access to this directory
         RewriteEngine On
+        # Enable the Apache rewrite engine
+        # Ensure authorization headers are passed to PHP.
+        # Some Apache configurations may filter them and break usage of API, CalDAV, ...
+        RewriteCond %{HTTP:Authorization} ^(.+)$
+        RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+        # Redirect all requests to GLPI router, unless the file exists.
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteRule ^(.*)$ index.php [QSA,L]
-sudo systemctl status apache2
+    </Directory>
+    # End of the Directory directive for /var/www/glpi/public
 </VirtualHost>
 
-# Habilitação do módulo rewrite no apache
-a2enmod rewrite
+# End of the VirtualHost configuration for port 80
 
-# Habilitação da configuração previamente criada
-a2enconf glpi.conf
 
-# Reinicialização do servidor web para buscar a nova configuração
-service apache2 restart
+ServerName if you have a public URL, you can type it here
+DocumentRoot if you will store GLPI in a different page, change it too.
+After the Virtual Host file is created you should disable the default apache site configuration, enable the rewrite module and reload the new vhost file.
 
-cd /etc/
+### mais comandos
 
-CONTINUAR PELA WEB!!!
+a2dissite 000-default.conf # Disable default apache site
+a2enmod rewrite # enable the rewrite module
+a2ensite glpi.conf # enable the new apache virtual host settings for your glpi instance
+systemctl restart apache2
 
-/glpi
+###
+
+For GLPI to work properly it is recommended to change the following parameters on your php.ini file
+
+Open the php.ini file
+
+nano /etc/php/8.3/apache2/php.ini
+Change the following parameters
+
+upload_max_filesize = 20M Maximum size for uploaded files is set to 20 megabytes.
+post_max_size = 20M Maximum size for POST data (e.g., form submissions) is also set to 20 megabytes.
+max_execution_time = 60 Maximum execution time for a PHP script is set to 60 seconds.
+max_input_vars = 5000 Maximum number of input variables (e.g., form fields) a script can accept is 5000.
+memory_limit = 256M The maximum amount of memory a single PHP script can use is 256 megabytes.
+session.cookie_httponly = On Sets the "HttpOnly" attribute for session cookies
+date.timezone = America/Sao_Paulo Sets the default timezone for PHP to yours.
+To add your timezone, please refer to the official list of supported timezones for PHP
+
+Entrar no site pelo IP
+
+localhost
+usuario / senha
+
+rm glpi/install/install.php
+
+
+REFERENCIAS
+
+https://faq.teclib.com/03_knowledgebase/procedures/install_glpi/#3-preparing-files-to-install-glpi
+https://www.youtube.com/watch?v=Dc0dy1Z6MyM]
+https://glpi-install.readthedocs.io/en/latest/prerequisites.html
+https://faq.teclib.com/03_knowledgebase/procedures/install_glpi/
