@@ -213,6 +213,14 @@ usuario / senha
 rm glpi/install/install.php
 
 
+### INSTALACAO DE AGENTES
+
+https://github.com/glpi-project/glpi-agent/releases/tag/1.7.1
+
+http://127.0.0.1:62354/
+
+
+
 REFERENCIAS
 
 https://faq.teclib.com/03_knowledgebase/procedures/install_glpi/#3-preparing-files-to-install-glpi

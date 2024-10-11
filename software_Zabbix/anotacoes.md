@@ -53,3 +53,23 @@ zabbix
 https://relatosti.com.br/artigo/instalando-o-zabbix-agent-no-linux-ubuntu-debian-e-centos&id=200
 
 
+
+sudo su
+
+
+wget https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_7.0-2+ubuntu22.04_all.deb
+dpkg -i zabbix-release_7.0-2+ubuntu22.04_all.deb
+apt-get update
+apt-get upgrade
+apt-get install zabbix-agent
+systemctl restart zabbix-agent
+systemctl enable zabbix-agent
+
+nano /etc/zabbix/zabbix_agentd.conf
+Server=IP address of Zabbix Server
+Hostname=Hostname of client PC
+
+systemctl restart zabbix-agent
+systemctl enable zabbix-agent
+systemctl status zabbix-agent
+
