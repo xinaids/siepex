@@ -221,24 +221,24 @@ rm glpi/install/install.php
 
 https://github.com/glpi-project/glpi-agent/releases/download/1.7.1/glpi-agent-1.7.1-linux-installer.pl
 
+Lembrar de configurar ativos de maquinas virtuais nas configurações (Inventario)
 
+wget https://github.com/glpi-project/glpi-agent/releases/download/1.11/glpi-agent-1.11-linux-installer.pl
+chmod +x glpi-agent-1.11-linux-installer.pl
+chmod 750 glpi-agent-1.11-linux-installer.pl  
+./glpi-agent-1.11-linux-installer.pl --install
+glpi-agent
+
+### ANOTACOES GERAIS
 
 https://github.com/glpi-project/glpi-agent/releases/tag/1.7.1
 http://127.0.0.1:62354/
-
-
 wget https://github.com/glpi-project/glpi-agent/releases/download/1.7.1/glpi-agent-1.7.1-linux-installer.pl
-
 apt install perl
-
 perl -v
 perl
 URL do servidor
 glpi-agent
-
-Lembrar de configurar ativos de maquinas virtuais nas configurações (Inventario)
-
-
 
 REFERENCIAS
 
