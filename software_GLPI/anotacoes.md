@@ -20,7 +20,7 @@ mysql_secure_installation
     
 
 
-### adicionar timezona (fuso horario)
+### adicionar timezone (fuso horario)
 mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql
 
 ### criar usuario e database no banco de dados
@@ -144,7 +144,7 @@ Proprietário: Leitura, escrita e execução (rwx).
 Grupo: Leitura e execução (r-x).
 Outros: Leitura e execução (r-x).
 
-### web server, criar arquivo no seguinte diretorio
+### web server, criar arquivo no seguinte diretorio, que é a home do GLPI
 nano /etc/apache2/sites-available/glpi.conf
 
 
@@ -193,7 +193,7 @@ For GLPI to work properly it is recommended to change the following parameters o
 
 Open the php.ini file
 
-nano /etc/php/8.3/apache2/php.ini
+nano /etc/php/8.1/apache2/php.ini
 Change the following parameters
 
 upload_max_filesize = 20M Maximum size for uploaded files is set to 20 megabytes.
@@ -208,22 +208,41 @@ To add your timezone, please refer to the official list of supported timezones f
 Entrar no site pelo IP
 
 localhost
-usuario / senha
+usuario / senha (banco de dados!)
+
+glpi / glpi
+
+configuracao, inventario
 
 rm glpi/install/install.php
 
 
 ### INSTALACAO DE AGENTES
 
-https://github.com/glpi-project/glpi-agent/releases/tag/1.7.1
+https://github.com/glpi-project/glpi-agent/releases/download/1.7.1/glpi-agent-1.7.1-linux-installer.pl
 
+
+
+https://github.com/glpi-project/glpi-agent/releases/tag/1.7.1
 http://127.0.0.1:62354/
+
+
+wget https://github.com/glpi-project/glpi-agent/releases/download/1.7.1/glpi-agent-1.7.1-linux-installer.pl
+
+apt install perl
+
+perl -v
+perl
+URL do servidor
+glpi-agent
+
+Lembrar de configurar ativos de maquinas virtuais nas configurações (Inventario)
 
 
 
 REFERENCIAS
 
 https://faq.teclib.com/03_knowledgebase/procedures/install_glpi/#3-preparing-files-to-install-glpi
-https://www.youtube.com/watch?v=Dc0dy1Z6MyM]
+https://www.youtube.com/watch?v=Dc0dy1Z6MyM
 https://glpi-install.readthedocs.io/en/latest/prerequisites.html
 https://faq.teclib.com/03_knowledgebase/procedures/install_glpi/

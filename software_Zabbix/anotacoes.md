@@ -25,7 +25,7 @@ grant all privileges on zabbix.* to zabbix@localhost;
 set global log_bin_trust_function_creators = 1;
 quit
 
-### revisar a partir daqui
+### 
 
 zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -p zabbix
 
@@ -53,10 +53,7 @@ zabbix
 https://relatosti.com.br/artigo/instalando-o-zabbix-agent-no-linux-ubuntu-debian-e-centos&id=200
 
 
-
 sudo su
-
-
 wget https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_7.0-2+ubuntu22.04_all.deb
 dpkg -i zabbix-release_7.0-2+ubuntu22.04_all.deb
 apt-get update
@@ -73,3 +70,6 @@ systemctl restart zabbix-agent
 systemctl enable zabbix-agent
 systemctl status zabbix-agent
 
+### adicionar agente
+
+Monitoring -> Hosts -> Create Host
