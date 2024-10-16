@@ -1,11 +1,11 @@
 # server ssh
-sudo apt install openssh-server
+```sudo apt install openssh-server```
 
 # net tools 
-apt install net-tools
+```apt install net-tools```
 
 ### atualizar tudo e todos no sistema
-apt update && apt upgrade
+```apt update && apt upgrade```
 
 ### instalacao de pacotes para glpi
 apt install -y apache2 php php-{apcu,cli,common,curl,gd,imap,ldap,mysql,xmlrpc,xml,mbstring,bcmath,intl,zip,redis,bz2} libapache2-mod-php php-soap php-cas
@@ -24,6 +24,7 @@ mysql_secure_installation
 mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql
 
 ### criar usuario e database no banco de dados
+
 mysql -uroot -pmysql
 CREATE DATABASE glpi;
 CREATE USER 'glpi'@'localhost' IDENTIFIED BY 'yourstrongpassword';
@@ -46,12 +47,13 @@ tar -xvzf glpi-10.0.15.tgz
 nano /var/www/html/glpi/inc/downstream.php
 
 ### config file colar isso aqui
+```
 <?php
 define('GLPI_CONFIG_DIR', '/etc/glpi/');
 if (file_exists(GLPI_CONFIG_DIR . '/local_define.php')) {
 require_once GLPI_CONFIG_DIR . '/local_define.php';
 }
-
+```
 ### mover diretorios
 mv /var/www/html/glpi/config /etc/glpi
 mv /var/www/html/glpi/files /var/lib/glpi
@@ -61,6 +63,7 @@ mv /var/lib/glpi/_log /var/log/glpi
 nano /etc/glpi/local_define.php
 
 ### colar isso
+```
 <?php
 define('GLPI_VAR_DIR', '/var/lib/glpi');
 define('GLPI_DOC_DIR', GLPI_VAR_DIR);
@@ -76,9 +79,10 @@ define('GLPI_TMP_DIR', GLPI_VAR_DIR . '/_tmp');
 define('GLPI_UPLOAD_DIR', GLPI_VAR_DIR . '/_uploads');
 define('GLPI_CACHE_DIR', GLPI_VAR_DIR . '/_cache');
 define('GLPI_LOG_DIR', '/var/log/glpi');
+```
 
 ### dar permissoes nas pastas e arquivos em geral
-
+```
 chown root:root /var/www/html/glpi/ -R
 chown www-data:www-data /etc/glpi -R
 chown www-data:www-data /var/lib/glpi -R
@@ -92,7 +96,8 @@ find /var/lib/glpi -type f -exec chmod 0644 {} \;
 find /var/lib/glpi -type d -exec chmod 0755 {} \;
 find /var/log/glpi -type f -exec chmod 0644 {} \;
 find /var/log/glpi -type d -exec chmod 0755 {} \;
-
+```
+```
 chown root:root /var/www/html/glpi/ -R
 # Muda o dono e o grupo de todos os arquivos e diretórios dentro de /var/www/html/glpi/ recursivamente (-R) para "root".
 
@@ -143,12 +148,14 @@ Resumindo o 0755:
 Proprietário: Leitura, escrita e execução (rwx).
 Grupo: Leitura e execução (r-x).
 Outros: Leitura e execução (r-x).
+```
 
 ### web server, criar arquivo no seguinte diretorio, que é a home do GLPI
 nano /etc/apache2/sites-available/glpi.conf
 
 
 # colar isso
+```
 # Start of the VirtualHost configuration for port 80
 
 <VirtualHost *:80>
@@ -174,19 +181,19 @@ nano /etc/apache2/sites-available/glpi.conf
 </VirtualHost>
 
 # End of the VirtualHost configuration for port 80
-
+```
 
 ServerName if you have a public URL, you can type it here
 DocumentRoot if you will store GLPI in a different page, change it too.
 After the Virtual Host file is created you should disable the default apache site configuration, enable the rewrite module and reload the new vhost file.
 
 ### mais comandos
-
+```
 a2dissite 000-default.conf # Disable default apache site
 a2enmod rewrite # enable the rewrite module
 a2ensite glpi.conf # enable the new apache virtual host settings for your glpi instance
 systemctl restart apache2
-
+```
 ###
 
 For GLPI to work properly it is recommended to change the following parameters on your php.ini file
@@ -195,7 +202,7 @@ Open the php.ini file
 
 nano /etc/php/8.1/apache2/php.ini
 Change the following parameters
-
+```
 upload_max_filesize = 20M Maximum size for uploaded files is set to 20 megabytes.
 post_max_size = 20M Maximum size for POST data (e.g., form submissions) is also set to 20 megabytes.
 max_execution_time = 60 Maximum execution time for a PHP script is set to 60 seconds.
@@ -204,7 +211,7 @@ memory_limit = 256M The maximum amount of memory a single PHP script can use is 
 session.cookie_httponly = On Sets the "HttpOnly" attribute for session cookies
 date.timezone = America/Sao_Paulo Sets the default timezone for PHP to yours.
 To add your timezone, please refer to the official list of supported timezones for PHP
-
+```
 Entrar no site pelo IP
 
 localhost
@@ -222,13 +229,13 @@ rm glpi/install/install.php
 https://github.com/glpi-project/glpi-agent/releases/download/1.7.1/glpi-agent-1.7.1-linux-installer.pl
 
 Lembrar de configurar ativos de maquinas virtuais nas configurações (Inventario)
-
+```
 wget https://github.com/glpi-project/glpi-agent/releases/download/1.11/glpi-agent-1.11-linux-installer.pl
 chmod +x glpi-agent-1.11-linux-installer.pl
 chmod 750 glpi-agent-1.11-linux-installer.pl  
 ./glpi-agent-1.11-linux-installer.pl --install
 glpi-agent
-
+```
 ### ANOTACOES GERAIS
 
 https://github.com/glpi-project/glpi-agent/releases/tag/1.7.1
