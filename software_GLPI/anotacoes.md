@@ -8,7 +8,7 @@
 ```apt update && apt upgrade```
 
 ### instalacao de pacotes para glpi
-apt install -y apache2 php php-{apcu,cli,common,curl,gd,imap,ldap,mysql,xmlrpc,xml,mbstring,bcmath,intl,zip,redis,bz2} libapache2-mod-php php-soap php-cas
+apt install -y apache2 php php-{apcu,cli,common,curl,gd,imap,ldap,mysql,xmlrpc,xml,mbstring,bcmath,intl,zip,redis,bz2} libapache2-mod-php php-soap php-cas<br>
 apt install -y mariadb-server
 
 ### instalcao do sql banco de dados
