@@ -9,43 +9,43 @@
 
 ### instalacao de pacotes para glpi
 apt install -y apache2 php php-{apcu,cli,common,curl,gd,imap,ldap,mysql,xmlrpc,xml,mbstring,bcmath,intl,zip,redis,bz2} libapache2-mod-php php-soap php-cas<br>
-apt install -y mariadb-server
+apt install -y mariadb-server<br>
 
 ### instalcao do sql banco de dados
-mysql_secure_installation
-    unix socket = y
-    change root password = y (siepexifrs123)
-    anonymous = y
-    remote login = y,y,y,y
+mysql_secure_installation<br>
+    unix socket = y<br>
+    change root password = y (siepexifrs123)<br>
+    anonymous = y<br>
+    remote login = y,y,y,y<br>
     
 
 
 ### adicionar timezone (fuso horario)
-mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql
+mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql<br>
 
 ### criar usuario e database no banco de dados
 
-mysql -uroot -pmysql
-CREATE DATABASE glpi;
-CREATE USER 'glpi'@'localhost' IDENTIFIED BY 'yourstrongpassword';
-GRANT ALL PRIVILEGES ON glpi.* TO 'glpi'@'localhost';
-GRANT SELECT ON `mysql`.`time_zone_name` TO 'glpi'@'localhost';
-FLUSH PRIVILEGES;
+mysql -uroot -pmysql<br>
+CREATE DATABASE glpi;<br>
+CREATE USER 'glpi'@'localhost' IDENTIFIED BY 'yourstrongpassword';<br>
+GRANT ALL PRIVILEGES ON glpi.* TO 'glpi'@'localhost';<br>
+GRANT SELECT ON `mysql`.`time_zone_name` TO 'glpi'@'localhost';<br>
+FLUSH PRIVILEGES;<br>
 
 ### instalacao do glpi
-cd /var/www/html
-wget https://github.com/glpi-project/glpi/releases/download/10.0.15/glpi-10.0.15.tgz
-tar -xvzf glpi-10.0.15.tgz
+cd /var/www/html<br>
+wget https://github.com/glpi-project/glpi/releases/download/10.0.15/glpi-10.0.15.tgz<br>
+tar -xvzf glpi-10.0.15.tgz<br>
 
 ### hierarquia dos dados
-/etc/glpi : for the files of configuration of GLPI (config_db.php, config_db_slave.php) ;
-/var/www/html/glpi : for the source code of GLPI (in reading only), served by Apache;
-/var/lib/glpi : for the variable files of GLPI (session, uploaded documents, cache, cron, plugins, …);
-/var/log/glpi : for the log files of GLPI.
+/etc/glpi : for the files of configuration of GLPI (config_db.php, config_db_slave.php) ;<br>
+/var/www/html/glpi : for the source code of GLPI (in reading only), served by Apache;<br>
+/var/lib/glpi : for the variable files of GLPI (session, uploaded documents, cache, cron, plugins, …);<br>
+/var/log/glpi : for the log files of GLPI.<br>
 
 ### downstream, indicar onde o diretorio do glpi está instalado # criar pasta
-nano /var/www/html/glpi/inc/downstream.php
-
+nano /var/www/html/glpi/inc/downstream.php<br>
+<br>
 ### config file colar isso aqui
 ```
 <?php
@@ -55,12 +55,12 @@ require_once GLPI_CONFIG_DIR . '/local_define.php';
 }
 ```
 ### mover diretorios
-mv /var/www/html/glpi/config /etc/glpi
-mv /var/www/html/glpi/files /var/lib/glpi
-mv /var/lib/glpi/_log /var/log/glpi
+mv /var/www/html/glpi/config /etc/glpi<br>
+mv /var/www/html/glpi/files /var/lib/glpi<br>
+mv /var/lib/glpi/_log /var/log/glpi<br>
 
 ### definir arquivos locais
-nano /etc/glpi/local_define.php
+nano /etc/glpi/local_define.php<br>
 
 ### colar isso
 ```
